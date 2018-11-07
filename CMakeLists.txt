@@ -11,7 +11,7 @@ FIND_PACKAGE( OpenCV REQUIRED )
 
 find_package( Threads )
 
-add_executable(trem main.cpp class/threads/sema.cpp class/threads/task.cpp class/threads/taskparam.cpp class/threads/thread.cpp class/mapatrem.cpp class/draw.cpp class/linep.cpp class/path.cpp class/threadtest.cpp)
+add_executable(trem main.cpp class/threads/sema.cpp class/threads/task.cpp class/threads/taskparam.cpp class/threads/thread.cpp class/mapatrem.cpp class/draw.cpp class/linep.cpp class/path.cpp class/threadtest.cpp class/petri.cpp)
 
 target_link_libraries(trem ${OpenCV_LIBS} ${OpenCV_INSTALL_PATH} ${CMAKE_THREAD_LIBS_INIT} )
 
