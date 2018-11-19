@@ -45,9 +45,9 @@ bool ThreadTest::Exec()
         sThreads.Lock();
         cout << "Me de trabalho! Sou a Thread " << Thread::ID() << endl;
         sThreads.Unlock();
-        
+
         Thread::SleepMS(1000); // espera 1 segundo
     }
-    
+
     return true;
 }

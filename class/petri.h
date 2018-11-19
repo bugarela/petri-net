@@ -26,4 +26,8 @@ public:
     vector <vector <int>> pre;
     vector <vector <int>> pos;
     vector <int> actions;
+    vector <int> marking;
 };
+
+PetriNet build_net();
+vector <int> sensibilized_transitions(PetriNet net);
