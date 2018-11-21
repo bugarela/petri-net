@@ -16,7 +16,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <cstdlib>
 #include "threadtest.h"
+
+int random(int n, int m){
+    return rand() % (m - n + 1) + n;
+}
 
 ThreadTest::ThreadTest(int qtdThreads)
 {
@@ -24,7 +29,7 @@ ThreadTest::ThreadTest(int qtdThreads)
     {
         Thread *th = new Thread();
         threads.push_back(th);
-         th->Event((Task *) this); // inicia a thread
+        th->Event((Task *) this); // inicia a thread
     }
 }
 
@@ -42,8 +47,17 @@ bool ThreadTest::Exec()
     // prendendo a thread na função
     while(1)
     {
-        sThreads.Lock();
         cout << "Me de trabalho! Sou a Thread " << Thread::ID() << endl;
+        sThreads.Lock();
+        PetriNet net = get_petrinet();
+        vector <int> transitions = sensibilized_transitions(net);
+        int transition_position = transitions[random(0, transitions.size()-1)];
+
+        net = execute_pre(net, transition_position);
+        //execute_action(net.action);
+        net = execute_pos(net, transition_position);
+
+        set_petrinet(net);
         sThreads.Unlock();
 
         Thread::SleepMS(1000); // espera 1 segundo

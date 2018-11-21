@@ -21,6 +21,9 @@ using namespace std;
 #define S 5
 #define G 7
 
+#define N_TRANSITIONS 18
+#define N_PLACES 17
+
 class PetriNet{
 public:
     vector <vector <int>> pre;
@@ -29,5 +32,9 @@ public:
     vector <int> marking;
 };
 
-PetriNet build_net();
-vector <int> sensibilized_transitions(PetriNet net);
+void build_net();
+void set_petrinet(PetriNet new_net);
+vector <int> sensibilized_transitions(PetriNet pnet);
+PetriNet get_petrinet();
+PetriNet execute_pre(PetriNet pnet, int transition);
+PetriNet execute_pos(PetriNet pnet, int transition);

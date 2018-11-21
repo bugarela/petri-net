@@ -4,19 +4,16 @@
 #include <vector>
 #include <string>
 #include "class/threadtest.h"
-#include "class/petri.h"
 
 using namespace std;
 
 int main(int argc, char **argv) {
 
+    build_net();
+
     ThreadTest teste(2);
-
-    Thread::SleepMS(10000);
-
-
-    PetriNet net = build_net();
-    vector <int> sensibilized_transitions = sensibilized_transitions(net);
+    //Thread::SleepMS(10);
+    //vector <int> transitions = sensibilized_transitions(net);
 
     MapaTrem trens;
 
@@ -39,7 +36,7 @@ int main(int argc, char **argv) {
         trens.Trem1Txt("a1=" + to_string((int) trens.A1()) + " a2=" + to_string((int) trens.A2()) + " b1=" + to_string((int) trens.B1()) + " b2=" + to_string((int) trens.B2()) + " c=" + to_string((int) trens.C()));
 
         int key = trens.GetLastKey();
-        cout << "LastKey = " << key << endl;
+        //cout << "LastKey = " << key << endl;
         if(key == 27)
             return 1;
     }
@@ -59,12 +56,13 @@ int main(int argc, char **argv) {
         trens.Trem2Txt("a1=" + to_string((int) trens.A1()) + " a2=" + to_string((int) trens.A2()) + " b1=" + to_string((int) trens.B1()) + " b2=" + to_string((int) trens.B2()) + " c=" + to_string((int) trens.C()));
 
         int key = trens.GetLastKey();
-        cout << "LastKey = " << key << endl;
+        //cout << "LastKey = " << key << endl;
         if(key == 27)
             return 1;
     }
 
     trens.Trem2Txt("Mensagem trem 2.");
 
+    while(1);
     return 0;
 }

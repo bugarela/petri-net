@@ -22,6 +22,7 @@
 #include "threads/thread.h"
 #include "threads/sema.h"
 #include "threads/task.h"
+#include "petri.h"
 #include <vector>
 #include <iostream>
 
@@ -33,9 +34,10 @@ private:
     vector<Thread *> threads;
     sema sThreads;
 public:
+    PetriNet petrinet;
     ThreadTest(int qtdThreads);
     ~ThreadTest();
-    
+
     // Task
     virtual bool Exec(); // primeiro método a ser executado por uma thread
 };
