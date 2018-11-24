@@ -33,9 +33,9 @@ class ThreadTest : public Task
 private:
     vector<Thread *> threads;
     sema sThreads;
+    int scope;
 public:
-    PetriNet petrinet;
-    ThreadTest(int qtdThreads);
+    ThreadTest(int qtdThreads, int scope);
     ~ThreadTest();
 
     // Task

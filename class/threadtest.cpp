@@ -19,12 +19,9 @@
 #include <cstdlib>
 #include "threadtest.h"
 
-int random(int n, int m){
-    return rand() % (m - n + 1) + n;
-}
-
-ThreadTest::ThreadTest(int qtdThreads)
+ThreadTest::ThreadTest(int qtdThreads, int scope)
 {
+    scope = scope;
     for(int i = 0; i < qtdThreads; i++)
     {
         Thread *th = new Thread();
@@ -44,20 +41,24 @@ ThreadTest::~ThreadTest()
 
 bool ThreadTest::Exec()
 {
-    // prendendo a thread na função
     while(1)
     {
         cout << "Me de trabalho! Sou a Thread " << Thread::ID() << endl;
         sThreads.Lock();
-        PetriNet net = get_petrinet();
+        cout << "aa";
+        PetriNet net = get_petrinet(scope);
         vector <int> transitions = sensibilized_transitions(net);
-        int transition_position = transitions[random(0, transitions.size()-1)];
+        int transition_position = -1;
+        while(transition_position == -1){
+            transition_position = choosed_transition(transitions, scope);
+            Thread::SleepMS(100);
+        }
 
         net = execute_pre(net, transition_position);
         //execute_action(net.action);
         net = execute_pos(net, transition_position);
 
-        set_petrinet(net);
+        set_petrinet(net, scope);
         sThreads.Unlock();
 
         Thread::SleepMS(1000); // espera 1 segundo

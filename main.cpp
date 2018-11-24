@@ -9,10 +9,13 @@ using namespace std;
 
 int main(int argc, char **argv) {
 
-    build_net();
+    build_nets();
 
-    ThreadTest teste(2);
-    //Thread::SleepMS(10);
+    ThreadTest estacao(2, STATION);
+
+    //Thread::SleepMS(4000);
+    //ThreadTest trem1(1, TREM_1);
+    //ThreadTest trem2(1, TREM_2);
     //vector <int> transitions = sensibilized_transitions(net);
 
     MapaTrem trens;

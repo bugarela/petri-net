@@ -1,28 +1,16 @@
-/*
-
-Transicao::{
-    Pre
-    Pos
-    funcao{
-        anda, para, liga sensor
-    }
-}
-
-funcao(estado atual){
-    transicoes = transicoes_sensibilizadas(estado atual)
-    transicao = escolhe(transicoes)
-    marcaao atual -= transicao.Pre
-    faz transicao.funcao()
-    marcaao atual += transicao.Pos
-    return marcaao atual
-}
-*/
 #include <iostream>
 #include <fstream>
+#include <cstdlib>
 #include "petri.h"
 using namespace std;
 
-PetriNet net;
+PetriNet nets[3];
+
+int train_command[2];
+
+int random(int n, int m){
+    return rand() % (m - n + 1) + n;
+}
 
 vector <vector <int>> read_matrix(string file){
     vector <vector <int> > matrix;
@@ -75,7 +63,7 @@ vector <int> read_vector(string file){
 }
 
 
-void build_net(){
+void build_nets(){
     PetriNet read_net;
 
     read_net.pre = read_matrix("net/pre.txt");
@@ -87,7 +75,20 @@ void build_net(){
     read_net.marking[5] = 1;
     read_net.marking[6] = 1;
 
-    net = read_net;
+    nets[0] = read_net;
+
+    read_net.pre = read_matrix("trens/pre.txt");
+    read_net.pos = read_matrix("trens/pos.txt");
+    read_net.actions = read_vector("trens/actions.txt");
+
+    read_net.marking.resize(3);
+    read_net.marking[2] = 1;
+
+    nets[1] = read_net;
+    nets[2] = read_net;
+
+    train_command[0] = -1;
+    train_command[1] = -1;
 }
 
 vector <int> sensibilized_transitions(PetriNet pnet){
@@ -107,24 +108,35 @@ vector <int> sensibilized_transitions(PetriNet pnet){
 
 }
 
-PetriNet get_petrinet(){
-    return net;
+PetriNet get_petrinet(int scope){
+    return nets[scope];
 }
 
-void set_petrinet(PetriNet new_net){
-    net = new_net;
+void set_petrinet(PetriNet new_net, int scope){
+    nets[scope] = new_net;
+}
+
+int choosed_transition(vector <int> transitions, int scope){
+    if (scope == STATION)
+        return transitions[random(0, transitions.size()-1)];
+
+    for (int transition : transitions)
+        if (train_command[scope] == transition)
+          return transition;
+
+    return -1;
 }
 
 PetriNet execute_pre(PetriNet pnet, int transition){
     cout << transition << endl;
-    for (int i=0; i<N_PLACES; i++){
+    for (int i=0; i<N_PLACES; i++)
         cout << pnet.marking[i] << " ";
-    }
+
     cout << endl;
 
-    for (int i=0; i<N_PLACES; i++){
+    for (int i=0; i<N_PLACES; i++)
         cout << pnet.pre[i][transition] << " ";
-    }
+
     cout << endl;
 
     for (int i=0; i<N_PLACES; i++){
@@ -146,4 +158,46 @@ PetriNet execute_pos(PetriNet pnet, int transition){
     }
     cout << endl;
     return pnet;
+}
+
+void execute_action(PetriNet pnet, int transition){
+    switch (pnet.actions[transition]) {
+      case N:
+        break;
+
+      case R1:
+        train_command[0] = R;
+        //show("T " + transition + " Mandou Trem 1 para direita");
+        break;
+
+      case R2:
+
+        break;
+
+      case L1:
+
+        break;
+
+      case L2:
+
+        break;
+
+      case S1:
+
+        break;
+
+      case S2:
+
+        break;
+
+      case G0:
+
+        break;
+
+      case G1:
+
+        break;
+
+
+    }
 }
