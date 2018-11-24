@@ -18,68 +18,60 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-
 #include "sema.h"
-#include "thread.h"
 #include <iostream>
+#include "thread.h"
 
-sema::sema()
-{
-	id = ++semaID; // começa em 1
+sema::sema() {
+  id = ++semaID;  // comeï¿½a em 1
 #ifdef __unix__
   sem_init(&mutex, 0, 1);
 
 #elif defined(_WIN32) || defined(WIN32)
-	mutex = CreateSemaphore(
-		NULL,           // default security attributes
-		1,  // initial count --- count of threads that can be inside
-		1,  // maximum count --- max threads inside
-		NULL);          // unnamed semaphore
+  mutex = CreateSemaphore(
+      NULL,   // default security attributes
+      1,      // initial count --- count of threads that can be inside
+      1,      // maximum count --- max threads inside
+      NULL);  // unnamed semaphore
 #endif
 }
 
-sema::~sema()
-{
+sema::~sema() {
 #ifdef __unix__
-	sem_destroy(&mutex); /* destroy semaphore */
+  sem_destroy(&mutex); /* destroy semaphore */
 #elif defined(_WIN32) || defined(WIN32)
-	CloseHandle(mutex);
+  CloseHandle(mutex);
 #endif
 }
 
-unsigned int sema::ID()
-{
-	return id;
-}
+unsigned int sema::ID() { return id; }
 
-void sema::Lock()
-{
+void sema::Lock() {
 #ifdef __unix__
   sem_wait(&mutex);
 #elif defined(_WIN32) || defined(WIN32)
-	while (1)
-	{
-		DWORD result = WaitForSingleObject(mutex,   // handle to semaphore
-	   		                               99999999L);           // zero-second time-out interval
+  while (1) {
+    DWORD result =
+        WaitForSingleObject(mutex,       // handle to semaphore
+                            99999999L);  // zero-second time-out interval
 
-		// reservou para a thread
-		if(result == WAIT_OBJECT_0)
-			break;
-		else
-			Thread::SleepMS(SEMA_H_WAIT); // perder um tempo antes de tentar novamente
-	}
+    // reservou para a thread
+    if (result == WAIT_OBJECT_0)
+      break;
+    else
+      Thread::SleepMS(
+          SEMA_H_WAIT);  // perder um tempo antes de tentar novamente
+  }
 #endif
-	Thread::SleepMS(SEMA_H_WAIT); // perder um tempo antes de continuar
+  Thread::SleepMS(SEMA_H_WAIT);  // perder um tempo antes de continuar
 }
 
-void sema::Unlock()
-{
+void sema::Unlock() {
 #ifdef __unix__
   sem_post(&mutex);
 #elif defined(_WIN32) || defined(WIN32)
-	ReleaseSemaphore(
-		mutex,  // handle to semaphore
-		1,            // increase count by one
-		NULL);
+  ReleaseSemaphore(mutex,  // handle to semaphore
+                   1,      // increase count by one
+                   NULL);
 #endif
 }

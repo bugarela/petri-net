@@ -18,84 +18,84 @@
 
 #ifndef MAPATREM_H
 #define MAPATREM_H
-#include "threads/sema.h"
-#include "threads/thread.h"
-#include "threads/task.h"
-#include "linep.h"
-#include <string>
 #include <opencv2/opencv.hpp>
-#include "draw.h"
-#include "path.h"
+#include <string>
 #include <vector>
+#include "draw.h"
+#include "linep.h"
+#include "path.h"
+#include "threads/sema.h"
+#include "threads/task.h"
+#include "threads/thread.h"
 
 using namespace std;
 using namespace cv;
 
-class MapaTrem : public Task
-{
-protected:
-    sema sMapa;
-    Thread *thread = NULL;
-    vector<Path *> trajetos;
-    
-    Mat fundoG0;
-    Mat fundoG1;
-    Mat trem1;
-    Mat trem2;
-    
-    int lastKey = -1;
-    
-    float t1p = 0;
-    int t1traj = 0;
-    //int t1x = 0, t1y = 0;
-    string t1msg = "";
-    
-    float t2p = 0;
-    int t2traj = 0;
-    //int t2x = 0, t2y = 0;
-    string t2msg = "";
-    
-    int gate = 0;
-    
-    bool a1 = false, a2 = false, b1 = false, b2 = false, c = false;
-    
-    bool imgAdd(Mat &fundo, Mat &add, int x, int y, Vec3b transpColor);
-    
-    bool Sensores(Point3f p1, Point3f p2, bool &a1, bool &a2, bool &b1, bool &b2, bool &c);
-    //bool Trem1Pos(int x, int y);
-    //bool Trem2Pos(int x, int y);
-public:
-    MapaTrem();
-    ~MapaTrem();
-    int Width();
-    int Height();
-    
-    bool Trem1Pos(float param, int trajeto);
-    void GetTrem1Pos(float *param, int *trajeto);
-    void GetTrem1Pos(int *x, int *y);
-    void Trem1Txt(string mensagem);
-    
-    bool Trem2Pos(float param, int trajeto);
-    void GetTrem2Pos(float *param, int *trajeto);
-    void GetTrem2Pos(int *x, int *y);
-    void Trem2Txt(string mensagem);
-    
-    void DistTrajetos();
-    
-    bool A1();
-    bool A2();
-    bool B1();
-    bool B2();
-    bool C();
-    
-    int GetLastKey();
-    int GetLastKeyAndEmpty();
-    
-    int Gate();
-    bool Gate(int position);
-    
-    // Task
-    virtual bool Exec();
+class MapaTrem : public Task {
+ protected:
+  sema sMapa;
+  Thread *thread = NULL;
+  vector<Path *> trajetos;
+
+  Mat fundoG0;
+  Mat fundoG1;
+  Mat trem1;
+  Mat trem2;
+
+  int lastKey = -1;
+
+  float t1p = 0;
+  int t1traj = 0;
+  // int t1x = 0, t1y = 0;
+  string t1msg = "";
+
+  float t2p = 0;
+  int t2traj = 0;
+  // int t2x = 0, t2y = 0;
+  string t2msg = "";
+
+  int gate = 0;
+
+  bool a1 = false, a2 = false, b1 = false, b2 = false, c = false;
+
+  bool imgAdd(Mat &fundo, Mat &add, int x, int y, Vec3b transpColor);
+
+  bool Sensores(Point3f p1, Point3f p2, bool &a1, bool &a2, bool &b1, bool &b2,
+                bool &c);
+  // bool Trem1Pos(int x, int y);
+  // bool Trem2Pos(int x, int y);
+ public:
+  MapaTrem();
+  ~MapaTrem();
+  int Width();
+  int Height();
+
+  bool Trem1Pos(float param, int trajeto);
+  void GetTrem1Pos(float *param, int *trajeto);
+  void GetTrem1Pos(int *x, int *y);
+  void Trem1Txt(string mensagem);
+
+  bool Trem2Pos(float param, int trajeto);
+  void GetTrem2Pos(float *param, int *trajeto);
+  void GetTrem2Pos(int *x, int *y);
+  void Trem2Txt(string mensagem);
+
+  void DistTrajetos();
+
+  bool A1();
+  bool A2();
+  bool B1();
+  bool B2();
+  bool C();
+
+  int GetLastKey();
+  int GetLastKeyAndEmpty();
+
+  int Gate();
+  bool Gate(int position);
+
+  // Task
+  virtual bool Exec();
 };
 
-#endif // MAPATREM_H
+#endif  // MAPATREM_H

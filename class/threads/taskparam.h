@@ -19,56 +19,55 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-
 #ifndef TASKPARAM_H
 #define TASKPARAM_H
 
-#include<vector>
-#include<algorithm>
+#include <algorithm>
+#include <vector>
 
 using namespace std;
 
-#include "task.h"
 #include "sema.h"
+#include "task.h"
 #include "thread.h"
 
 class TaskParam;
 class ThreadParam;
 
-class ThreadParamNode
-{
-public:
+class ThreadParamNode {
+ public:
   ThreadParamNode() {}
   ~ThreadParamNode() {}
-  
+
   ThreadParam *thread = NULL;
   TaskParam *task = NULL;
   vector<void *> *jobs = NULL;
   sema *semaJobs = NULL;
 };
 
-class ThreadParam //: public Thread
+class ThreadParam  //: public Thread
 {
-protected:
+ protected:
   ThreadParamNode *node = NULL;
 #ifdef __unix__
-	pthread_t id;
+  pthread_t id;
 #elif defined(_WIN32) || defined(WIN32)
-	HANDLE id;
+  HANDLE id;
 #endif
   bool concluded = false;
   sema semaConcluded;
   vector<void *> jobs;
   sema semaJobs;
-  
+
   bool Start(Task *eTask);
-public:
-	ThreadParam(TaskParam *eTask);
-	~ThreadParam();
-	bool IsCurrentThread();
+
+ public:
+  ThreadParam(TaskParam *eTask);
+  ~ThreadParam();
+  bool IsCurrentThread();
   long int GetID();
-	static void SleepMS(unsigned int tempo);
-	static long int ID();
+  static void SleepMS(unsigned int tempo);
+  static long int ID();
   bool NewJob(void *data);
   unsigned int QtdJobs();
   void ConcludeProcess();
@@ -76,14 +75,13 @@ public:
   bool Concluded();
 };
 
+class TaskParam : Task {
+ protected:
+  TaskParam();
 
-class TaskParam : Task
-{
-protected:
-	TaskParam();
-public:
-	~TaskParam();
-  
+ public:
+  ~TaskParam();
+
   virtual bool Exec(ThreadParam *thread, void *data);
 };
 

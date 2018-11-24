@@ -19,27 +19,27 @@
 #ifndef THREADTEST_H
 #define THREADTEST_H
 
-#include "threads/thread.h"
+#include <iostream>
+#include <vector>
+#include "petri.h"
 #include "threads/sema.h"
 #include "threads/task.h"
-#include "petri.h"
-#include <vector>
-#include <iostream>
+#include "threads/thread.h"
 
 using namespace std;
 
-class ThreadTest : public Task
-{
-private:
-    vector<Thread *> threads;
-    sema sThreads;
-    PetriNet* net;
-public:
-    ThreadTest(int qtdThreads, PetriNet* net);
-    ~ThreadTest();
+class ThreadTest : public Task {
+ private:
+  vector<Thread*> threads;
+  sema sThreads;
+  PetriNet* net;
 
-    // Task
-    virtual bool Exec(); // primeiro método a ser executado por uma thread
+ public:
+  ThreadTest(int qtdThreads, PetriNet* net);
+  ~ThreadTest();
+
+  // Task
+  virtual bool Exec();  // primeiro método a ser executado por uma thread
 };
 
-#endif // THREADTEST_H
+#endif  // THREADTEST_H

@@ -23,212 +23,179 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 //#include <iostream>
 
 #ifdef __unix__
+#include <cxxabi.h>
 #include <pthread.h>
 #include <unistd.h>
-#include <cxxabi.h>
 //#include <thread>
 #elif defined(_WIN32) || defined(WIN32)
 #include <windows.h>
 #endif
 
 #ifdef __unix__
-void *execParam(void *ptr)
-{
-  try
-  {
-    ThreadParamNode *node = (ThreadParamNode *) ptr;
-    while(1)
-    {
+void *execParam(void *ptr) {
+  try {
+    ThreadParamNode *node = (ThreadParamNode *)ptr;
+    while (1) {
       void *job = NULL;
-      
-      if(node->jobs == NULL)
-      {
+
+      if (node->jobs == NULL) {
         ThreadParam::SleepMS(50);
         continue;
       }
-      
+
       node->semaJobs->Lock();
-      if(node->jobs->size() > 0)
-      {
+      if (node->jobs->size() > 0) {
         job = *(node->jobs->begin());
         node->jobs->erase(node->jobs->begin());
       }
       node->semaJobs->Unlock();
-      
-      if(job == NULL)
-      {
+
+      if (job == NULL) {
         node->thread->ConcludeProcess();
         ThreadParam::SleepMS(50);
         continue;
       }
-      
+
       node->thread->RestartProcess();
       node->task->Exec(node->thread, job);
     }
-  }   
-  catch (abi::__forced_unwind&)
-  {  // handle pthread_cancel stack unwinding exception
-      throw;
+  } catch (abi::__forced_unwind
+               &) {  // handle pthread_cancel stack unwinding exception
+    throw;
+  } catch (exception &ex) {
+    throw ex;
   }
-  catch (exception &ex) 
-  {
-      throw ex;
-  }
-  
-	return NULL;
+
+  return NULL;
 }
 #elif defined(_WIN32) || defined(WIN32)
-DWORD WINAPI execParam(LPVOID ptr)
-{
-  ThreadParamNode *node = (ThreadParamNode *) ptr;
+DWORD WINAPI execParam(LPVOID ptr) {
+  ThreadParamNode *node = (ThreadParamNode *)ptr;
   node->task->Exec(node->thread, node->data);
-  
+
   delete node;
-	return 0;
+  return 0;
 }
 #endif
 
-ThreadParam::ThreadParam(TaskParam* eTask)
-{
+ThreadParam::ThreadParam(TaskParam *eTask) {
   node = new ThreadParamNode();
   node->thread = this;
   node->task = eTask;
   node->jobs = &jobs;
   node->semaJobs = &semaJobs;
-  
+
 #ifdef __unix__
-	int ret;
-    ret = pthread_create(&this->id, NULL, execParam, (void*)node);
-    
+  int ret;
+  ret = pthread_create(&this->id, NULL, execParam, (void *)node);
+
 #elif defined(_WIN32) || defined(WIN32)
-	this->id = CreateThread(0, 0, execParam, (void*)node, 0, NULL);
+  this->id = CreateThread(0, 0, execParam, (void *)node, 0, NULL);
 #endif
 }
 
-ThreadParam::~ThreadParam()
-{
-  if (this->id != 0)
-  {
+ThreadParam::~ThreadParam() {
+  if (this->id != 0) {
 #ifdef __unix__
     void *res;
 
     pthread_cancel(id);
     pthread_join(id, &res);
 #elif defined(_WIN32) || defined(WIN32)
-		CloseHandle(id);
+    CloseHandle(id);
 #endif
   }
-	delete node;
+  delete node;
 }
 
-void ThreadParam::RestartProcess()
-{
+void ThreadParam::RestartProcess() {
   semaConcluded.Lock();
   concluded = false;
   semaConcluded.Unlock();
 }
 
-void ThreadParam::ConcludeProcess()
-{
+void ThreadParam::ConcludeProcess() {
   semaConcluded.Lock();
   concluded = true;
   semaConcluded.Unlock();
 }
 
-bool ThreadParam::Concluded()
-{
+bool ThreadParam::Concluded() {
   bool ret;
 
   semaConcluded.Lock();
   ret = concluded;
   semaConcluded.Unlock();
-  
+
   return ret;
 }
 
-bool ThreadParam::NewJob(void* data)
-{
+bool ThreadParam::NewJob(void *data) {
   semaJobs.Lock();
   jobs.push_back(data);
   semaJobs.Unlock();
-  
+
   node->thread->RestartProcess();
-  
+
   return true;
 }
 
-unsigned int ThreadParam::QtdJobs()
-{
+unsigned int ThreadParam::QtdJobs() {
   unsigned int qtd = 0;
   semaJobs.Lock();
   qtd = jobs.size();
   semaJobs.Unlock();
-  
+
   return qtd;
 }
 
-long ThreadParam::GetID()
-{
+long ThreadParam::GetID() {
 #ifdef __unix__
-	return id;
+  return id;
 #elif defined(_WIN32) || defined(WIN32)
-	return (long int) id();
+  return (long int)id();
 #endif
 }
 
-bool ThreadParam::IsCurrentThread()
-{
-  if((long int) this->id == ThreadParam::ID())
-    return true;
+bool ThreadParam::IsCurrentThread() {
+  if ((long int)this->id == ThreadParam::ID()) return true;
   return false;
 }
 
-
-
 // static
 
-long int ThreadParam::ID()
-{
+long int ThreadParam::ID() {
 #ifdef __unix__
-	return pthread_self();
+  return pthread_self();
 #elif defined(_WIN32) || defined(WIN32)
-	return (long int) GetCurrentThreadId();
+  return (long int)GetCurrentThreadId();
 #endif
 }
 
-void ThreadParam::SleepMS(unsigned int tempo)
-{
+void ThreadParam::SleepMS(unsigned int tempo) {
 #ifdef __unix__
-	usleep(tempo * 1000);   // usleep takes sleep time in us (1 millionth of a second)
+  usleep(tempo *
+         1000);  // usleep takes sleep time in us (1 millionth of a second)
 #elif defined(_WIN32) || defined(WIN32)
-	Sleep(tempo);
+  Sleep(tempo);
 #endif
 }
 
+TaskParam::TaskParam() {}
 
+TaskParam::~TaskParam() {}
 
+bool TaskParam::Exec(ThreadParam *thread, void *data) {
+  // delete (ThreadParam *) data;
 
-TaskParam::TaskParam()
-{
-}
-
-TaskParam::~TaskParam()
-{
-}
-
-bool TaskParam::Exec(ThreadParam* thread, void* data)
-{
-  //delete (ThreadParam *) data;
-  
   return true;
 }
-
 
 /*
 Task::Task()
 {
-	status = TaskStatusNotSubmitted;
-	threads = 0;
+        status = TaskStatusNotSubmitted;
+        threads = 0;
 }
 
 Task::~Task()
@@ -237,62 +204,65 @@ Task::~Task()
 
 void Task::StatusSet(TaskStatus_t status)
 {
-	statusSema.Lock();
-	this->status = status;
-	statusSema.Unlock();
+        statusSema.Lock();
+        this->status = status;
+        statusSema.Unlock();
 }
 
 TaskStatus_t Task::Status()
 {
-	TaskStatus_t state;
+        TaskStatus_t state;
 
-	statusSema.Lock();
-	state = status;
-	statusSema.Unlock();
-	return state;
+        statusSema.Lock();
+        state = status;
+        statusSema.Unlock();
+        return state;
 }
 
 void Task::ThreadAdd()
 {
-	semaThreads.Lock();
-	threads++;
-	semaThreads.Unlock();
+        semaThreads.Lock();
+        threads++;
+        semaThreads.Unlock();
 }
 
 bool Task::ThreadRemove()
 {
-	bool retorno;
-	
-	semaThreads.Lock();
-	if (threads > 0)
-	{
-		threads--;
-		retorno = true;
-	}
-	else
-		retorno = false;
-	
-	if (threads == 0)
-		this->StatusSet(TaskStatusCompleted);
-	semaThreads.Unlock();
+        bool retorno;
 
-	return retorno;
+
+        semaThreads.Lock();
+        if (threads > 0)
+        {
+                threads--;
+                retorno = true;
+        }
+        else
+                retorno = false;
+
+
+        if (threads == 0)
+                this->StatusSet(TaskStatusCompleted);
+        semaThreads.Unlock();
+
+        return retorno;
 }
 
 unsigned int Task::ThreadsQtdExec()
 {
-	unsigned int tam;
-	
-	semaThreads.Lock();
-	tam = threads;
-	semaThreads.Unlock();
+        unsigned int tam;
 
-	return tam;
+
+        semaThreads.Lock();
+        tam = threads;
+        semaThreads.Unlock();
+
+        return tam;
 }
 
 
 bool Task::Exec()
 {
-	return false;
+        return false;
 }
 */

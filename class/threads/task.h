@@ -19,41 +19,41 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-
 #ifndef TASK_H
 #define TASK_H
 
-#include<vector>
-#include<algorithm>
+#include <algorithm>
+#include <vector>
 
 using namespace std;
 
 #include "sema.h"
 
 typedef enum {
-	TaskStatusNotSubmitted,
-	TaskStatusWaitingOnQueue,
-	TaskStatusBeingProcessed,
-	TaskStatusCompleted
+  TaskStatusNotSubmitted,
+  TaskStatusWaitingOnQueue,
+  TaskStatusBeingProcessed,
+  TaskStatusCompleted
 } TaskStatus_t;
 
-class Task
-{
-private:
-	sema statusSema, semaThreads;
-protected:
-	sema semaphoro;
-	TaskStatus_t status;
-	unsigned int threads;
-	Task();
-	void ThreadAdd();
-	bool ThreadRemove();
-public:
-	virtual void StatusSet(TaskStatus_t status);
-	TaskStatus_t Status();
-	~Task();
-	unsigned int ThreadsQtdExec();
-	virtual bool Exec();
+class Task {
+ private:
+  sema statusSema, semaThreads;
+
+ protected:
+  sema semaphoro;
+  TaskStatus_t status;
+  unsigned int threads;
+  Task();
+  void ThreadAdd();
+  bool ThreadRemove();
+
+ public:
+  virtual void StatusSet(TaskStatus_t status);
+  TaskStatus_t Status();
+  ~Task();
+  unsigned int ThreadsQtdExec();
+  virtual bool Exec();
 };
 
 #endif

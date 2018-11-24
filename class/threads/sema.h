@@ -19,7 +19,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-
 #ifndef SEMA_H
 #define SEMA_H
 
@@ -38,23 +37,21 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 static unsigned int semaID = 0;
 
-class sema
-{
-private:
-	unsigned int id;
+class sema {
+ private:
+  unsigned int id;
 #ifdef __unix__
-	sem_t mutex;
+  sem_t mutex;
 #elif defined(_WIN32) || defined(WIN32)
-	HANDLE mutex;
+  HANDLE mutex;
 #endif
 
-public:
-	sema();
-	~sema();
-	unsigned int ID();
-	void Lock();
-	void Unlock();
+ public:
+  sema();
+  ~sema();
+  unsigned int ID();
+  void Lock();
+  void Unlock();
 };
 
-#endif // SEMA_H
-
+#endif  // SEMA_H

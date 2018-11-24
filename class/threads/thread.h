@@ -19,7 +19,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-
 #ifndef THREAD_H
 #define THREAD_H
 
@@ -31,24 +30,24 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "task.h"
 
-class Thread
-{
-protected:
+class Thread {
+ protected:
 #ifdef __unix__
-	pthread_t id;
+  pthread_t id;
 #elif defined(_WIN32) || defined(WIN32)
-	HANDLE id;
+  HANDLE id;
 #endif
   bool Start(Task *eTask);
-	virtual bool Stop();
-public:
-	Thread();
-	~Thread();
-	bool Event(Task *eTask);
-	bool IsCurrentThread();
+  virtual bool Stop();
+
+ public:
+  Thread();
+  ~Thread();
+  bool Event(Task *eTask);
+  bool IsCurrentThread();
   long int GetID();
-	static void SleepMS(unsigned int tempo);
-	static long int ID();
+  static void SleepMS(unsigned int tempo);
+  static long int ID();
 };
 
-#endif // THREAD_H
+#endif  // THREAD_H

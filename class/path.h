@@ -19,31 +19,31 @@
 #ifndef PATH_H
 #define PATH_H
 
-#include "linep.h"
 #include <vector>
+#include "linep.h"
 
 using namespace std;
 
 // cria uma sequência de linhas como sendo um único caminho (entre 0 e 1)
 
-class Path
-{
-protected:
-   vector<linep *> linhas;
-   vector<float> lposini, lposfim;
-   Point3f start;
-   bool empty = true;
-   
-   bool parameters();
-public:
-    Path();
-    ~Path();
-    
-    bool Empty();
-       
-    bool AddPoint(Point3f pt);
-    Point3f GetPoint(float parameter);
-    void DispPath();
+class Path {
+ protected:
+  vector<linep *> linhas;
+  vector<float> lposini, lposfim;
+  Point3f start;
+  bool empty = true;
+
+  bool parameters();
+
+ public:
+  Path();
+  ~Path();
+
+  bool Empty();
+
+  bool AddPoint(Point3f pt);
+  Point3f GetPoint(float parameter);
+  void DispPath();
 };
 
-#endif // PATH_H
+#endif  // PATH_H

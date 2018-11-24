@@ -16,32 +16,46 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 #ifndef DRAW_H
 #define DRAW_H
 
-#include<opencv2/opencv.hpp>
-#include<string>
+#include <opencv2/opencv.hpp>
+#include <string>
 
 using namespace cv;
 using namespace std;
 
-class draw
-{
-public:
-  static bool line(Mat *img, Point start, Point end, Scalar color = Scalar::all(255), int thickness = 2, int lineType = 8);
-  
-  static bool rectangle(Mat *img, Point pIni, Point pFim, unsigned int borda, Scalar borderColor);
-  static bool rectangle(Mat *img, Point pIni, Point pFim, unsigned int borda, Scalar fillColor, Scalar borderColor);
-  static bool rectangle(Mat* img, Rect regiao, unsigned int borda, Scalar borderColor);
-  static bool rectangle(Mat* img, Rect regiao, unsigned int borda, Scalar fillColor, Scalar color);
-  static bool triangle(Mat *img, Point p1, Point p2, Point p3, Scalar color, int lineType=8, int shift=0);
-  
-  static bool circle(Mat* img, Point center, int radius = 10, Scalar color = Scalar::all(255), int thickness=-1, int lineType=8, int shift=0);
-  
-  static bool text(string text, Mat* img, Point posicao, Scalar color = Scalar::all(255), double fontScale = 2, int fontFace = FONT_HERSHEY_COMPLEX_SMALL, int thickness = 0, bool box = false, Scalar boxColor = Scalar::all(0));
-  static bool textCenter(string text, Mat* img, Point center, Scalar color = Scalar::all(255), double fontScale = 2, int fontFace = FONT_HERSHEY_COMPLEX_SMALL, int thickness = 0, bool box = false, Scalar boxColor = Scalar::all(0));
-  
+class draw {
+ public:
+  static bool line(Mat *img, Point start, Point end,
+                   Scalar color = Scalar::all(255), int thickness = 2,
+                   int lineType = 8);
+
+  static bool rectangle(Mat *img, Point pIni, Point pFim, unsigned int borda,
+                        Scalar borderColor);
+  static bool rectangle(Mat *img, Point pIni, Point pFim, unsigned int borda,
+                        Scalar fillColor, Scalar borderColor);
+  static bool rectangle(Mat *img, Rect regiao, unsigned int borda,
+                        Scalar borderColor);
+  static bool rectangle(Mat *img, Rect regiao, unsigned int borda,
+                        Scalar fillColor, Scalar color);
+  static bool triangle(Mat *img, Point p1, Point p2, Point p3, Scalar color,
+                       int lineType = 8, int shift = 0);
+
+  static bool circle(Mat *img, Point center, int radius = 10,
+                     Scalar color = Scalar::all(255), int thickness = -1,
+                     int lineType = 8, int shift = 0);
+
+  static bool text(string text, Mat *img, Point posicao,
+                   Scalar color = Scalar::all(255), double fontScale = 2,
+                   int fontFace = FONT_HERSHEY_COMPLEX_SMALL, int thickness = 0,
+                   bool box = false, Scalar boxColor = Scalar::all(0));
+  static bool textCenter(string text, Mat *img, Point center,
+                         Scalar color = Scalar::all(255), double fontScale = 2,
+                         int fontFace = FONT_HERSHEY_COMPLEX_SMALL,
+                         int thickness = 0, bool box = false,
+                         Scalar boxColor = Scalar::all(0));
+
   static Mat CutImgBySeg(Mat *img, Mat *segmentation);
 
   // Mat
@@ -50,4 +64,4 @@ public:
   static void redim(Mat *img, unsigned int width, unsigned int height);
 };
 
-#endif // DRAW_H
+#endif  // DRAW_H

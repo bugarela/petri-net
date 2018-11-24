@@ -16,51 +16,46 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <cstdlib>
 #include "threadtest.h"
+#include <cstdlib>
 
-ThreadTest::ThreadTest(int qtdThreads, PetriNet* net)
-{
-    for(int i = 0; i < qtdThreads; i++)
-    {
-        Thread *th = new Thread();
-        threads.push_back(th);
-        th->Event((Task *) this); // inicia a thread
-    }
+ThreadTest::ThreadTest(int qtdThreads, PetriNet *net) {
+  for (int i = 0; i < qtdThreads; i++) {
+    Thread *th = new Thread();
+    threads.push_back(th);
+    th->Event((Task *)this);  // inicia a thread
+  }
 }
 
-ThreadTest::~ThreadTest()
-{
-    for(Thread *th : threads)
-    {
-        delete th;
-    }
-    threads.clear();
+ThreadTest::~ThreadTest() {
+  for (Thread *th : threads) {
+    delete th;
+  }
+  threads.clear();
 }
 
-bool ThreadTest::Exec()
-{
-    while(1)
-    {
-        cout << "Me de trabalho! Sou a Thread " << Thread::ID() << endl;
-        sThreads.Lock();
-        cout << "aa";
-        vector <int> transitions = net->sensibilized_transitions();
+bool ThreadTest::Exec() {
+  while (1) {
+    cout << net->n_transitions << endl;
+    cout << "Me de trabalho! Sou a Thread " << Thread::ID() << endl;
+    sThreads.Lock();
+    cout << "aa";
+    vector<int> transitions = net->sensibilized_transitions();
 
-        int transition_position = -1;
-        while(transition_position == -1){
-            transition_position = net->choose_transition(transitions);
-            Thread::SleepMS(100);
-        }
-
-        net->execute_pre(transition_position);
-        //execute_action(net->action);
-        net->execute_pos(transition_position);
-
-        sThreads.Unlock();
-
-        Thread::SleepMS(1000); // espera 1 segundo
+    int transition_position = -1;
+    while (transition_position == -1) {
+      transition_position = net->choose_transition(transitions);
+      Thread::SleepMS(100);
     }
 
-    return true;
+    net->execute_pre(transition_position);
+    // execute_action(net->action);
+    net->execute_pos(transition_position);
+
+    sThreads.Unlock();
+
+    Thread::SleepMS(1000);  // espera 1 segundo
+  }
+
+  return true;
 }

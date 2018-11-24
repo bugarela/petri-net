@@ -18,124 +18,100 @@
 
 #include "path.h"
 
+Path::Path() {}
 
-Path::Path()
-{
-    
-}
+Path::~Path() { this->Empty(); }
 
-Path::~Path()
-{
-    this->Empty();
-}
+bool Path::parameters() {
+  vector<float> lsize;
+  float distTot = 0;
 
-bool Path::parameters()
-{
-    vector<float> lsize;
-    float distTot = 0;
-    
-    lsize.clear();
-    for(linep *ln: linhas)
-    {
-        Point3f start = ln->Start();
-        lsize.push_back(ln->EndDistance(start));
-        distTot += lsize[lsize.size() - 1];
-    }
-    
-    lposini.clear();
-    lposfim.clear();
-    
-    float pos = 0;
-    
-    for(unsigned int i = 0; i < linhas.size(); i++)
-    {
-        if(i == 0)
-            lposini.push_back(0);
-        else
-            lposini.push_back(pos / distTot);
-        
-        pos += lsize[i];
-        if(i == linhas.size() - 1)
-            lposfim.push_back(1);
-        else
-            lposfim.push_back(pos / distTot);
-    }
-    
-    return true;
-}
+  lsize.clear();
+  for (linep *ln : linhas) {
+    Point3f start = ln->Start();
+    lsize.push_back(ln->EndDistance(start));
+    distTot += lsize[lsize.size() - 1];
+  }
 
-bool Path::Empty()
-{
-    for(linep *ln: linhas)
-        delete ln;
-    linhas.clear();
-    
-    lposini.clear();
-    lposfim.clear();
-    
-    empty = true;
-    
-    return true;
-}
+  lposini.clear();
+  lposfim.clear();
 
-bool Path::AddPoint(Point3f pt)
-{
-    if(empty == true)
-    {
-        start = pt;
-        empty = false;
-    }
+  float pos = 0;
+
+  for (unsigned int i = 0; i < linhas.size(); i++) {
+    if (i == 0)
+      lposini.push_back(0);
     else
-    {
-        linep *ln;
+      lposini.push_back(pos / distTot);
 
-        if(linhas.size() == 0)
-            ln = new linep(start, pt);
-        else
-            ln = new linep(linhas[linhas.size() - 1]->End(), pt);
+    pos += lsize[i];
+    if (i == linhas.size() - 1)
+      lposfim.push_back(1);
+    else
+      lposfim.push_back(pos / distTot);
+  }
 
-        linhas.push_back(ln);
-        
-        parameters();
-    }
-    
-    return true;
+  return true;
 }
 
-Point3f Path::GetPoint(float parameter)
-{
-    if(linhas.size() < 1)
-        return Point3f();
-    
-    float p = 0;
-    unsigned int sel = 0;
-    
-    for(sel = 0; sel < linhas.size(); sel++)
-    {
-        if(lposfim[sel] >= parameter)
-        {
-            break;
-        }
-    }
-    
-    if(sel >= linhas.size())
-        sel =  linhas.size() - 1;
-    
-    p = (parameter - lposini[sel]) / (lposfim[sel] - lposini[sel]);
-     
-    return linhas[sel]->GetPoint(p);
+bool Path::Empty() {
+  for (linep *ln : linhas) delete ln;
+  linhas.clear();
+
+  lposini.clear();
+  lposfim.clear();
+
+  empty = true;
+
+  return true;
 }
 
-void Path::DispPath()
-{
-    cout << "qtdLinhas " << linhas.size() << endl;
-    for(unsigned int i = 0; i < linhas.size() ; i++)
-    {
-        cout << "linha[" << i << "] ";
-        cout << linhas[i]->Start();
-        cout << " " << linhas[i]->End();
-        cout << "ini " << lposini[i];
-        cout << " fim " << lposfim[i] << endl;
-    }
+bool Path::AddPoint(Point3f pt) {
+  if (empty == true) {
+    start = pt;
+    empty = false;
+  } else {
+    linep *ln;
+
+    if (linhas.size() == 0)
+      ln = new linep(start, pt);
+    else
+      ln = new linep(linhas[linhas.size() - 1]->End(), pt);
+
+    linhas.push_back(ln);
+
+    parameters();
+  }
+
+  return true;
 }
 
+Point3f Path::GetPoint(float parameter) {
+  if (linhas.size() < 1) return Point3f();
+
+  float p = 0;
+  unsigned int sel = 0;
+
+  for (sel = 0; sel < linhas.size(); sel++) {
+    if (lposfim[sel] >= parameter) {
+      break;
+    }
+  }
+
+  if (sel >= linhas.size()) sel = linhas.size() - 1;
+
+  p = (parameter - lposini[sel]) / (lposfim[sel] - lposini[sel]);
+
+  return linhas[sel]->GetPoint(p);
+}
+
+void Path::DispPath() {
+  cout << "qtdLinhas " << linhas.size() << endl;
+  for (unsigned int i = 0; i < linhas.size(); i++) {
+    cout << "linha[" << i << "] ";
+    cout << linhas[i]->Start();
+    cout << " " << linhas[i]->End();
+    cout << "ini " << lposini[i];
+    cout << " fim " << lposfim[i] << endl;
+  }
+}

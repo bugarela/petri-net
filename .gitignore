@@ -3,3 +3,5 @@ build/CMakeCache.txt
 build/trem
 build/Makefile
 build/CMakeFiles
+
+.vscode
