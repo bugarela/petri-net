@@ -4,19 +4,15 @@
 #include "petri.h"
 using namespace std;
 
-PetriNet nets[3];
-
-int train_command[2];
-
 int random(int n, int m){
     return rand() % (m - n + 1) + n;
 }
 
-vector <vector <int>> read_matrix(string file){
+vector <vector <int>> read_matrix(string file, int n_places, int n_transitions){
     vector <vector <int> > matrix;
-    matrix.resize(N_PLACES);
-    for (int i=0; i<N_PLACES; i++)
-        matrix[i].resize(N_TRANSITIONS);
+    matrix.resize(n_places);
+    for (int i=0; i<n_places; i++)
+        matrix[i].resize(n_transitions);
 
     ifstream in(file);
 
@@ -24,8 +20,8 @@ vector <vector <int>> read_matrix(string file){
         cout << file << " not found" << endl;
         exit(1);
     }
-    for (int i=0; i<N_PLACES; i++)
-        for (int j=0; j<N_TRANSITIONS; j++)
+    for (int i=0; i<n_places; i++)
+        for (int j=0; j<n_transitions; j++)
             in >> matrix[i][j];
 
     in.close();
@@ -33,9 +29,9 @@ vector <vector <int>> read_matrix(string file){
 }
 
 
-vector <int> read_vector(string file){
+vector <int> read_vector(string file, int n_transitions){
     vector <int> actions;
-    actions.resize(N_TRANSITIONS);
+    actions.resize(n_transitions);
 
     ifstream in(file);
 
@@ -47,7 +43,7 @@ vector <int> read_vector(string file){
     char ac;
     int trem;
 
-    for (int i=0; i<N_TRANSITIONS; i++){
+    for (int i=0; i<n_transitions; i++){
         in >> ac >> trem;
         switch(ac){
             case 'N': actions[i] = N; break;
@@ -63,110 +59,79 @@ vector <int> read_vector(string file){
 }
 
 
-void build_nets(){
-    PetriNet read_net;
+PetriNet::PetriNet(string filename, int n_places, int n_transitions, vector<int> marking){
+    pre = read_matrix(filename + "/pre.txt", n_places, n_transitions);
+    pos = read_matrix(filename + "/pos.txt", n_places, n_transitions);
+    actions = read_vector(filename + "/actions.txt", n_transitions);
+    marking = marking;
 
-    read_net.pre = read_matrix("net/pre.txt");
-    read_net.pos = read_matrix("net/pos.txt");
-    read_net.actions = read_vector("net/actions.txt");
-
-    read_net.marking.resize(N_PLACES);
-    read_net.marking[4] = 1;
-    read_net.marking[5] = 1;
-    read_net.marking[6] = 1;
-
-    nets[0] = read_net;
-
-    read_net.pre = read_matrix("trens/pre.txt");
-    read_net.pos = read_matrix("trens/pos.txt");
-    read_net.actions = read_vector("trens/actions.txt");
-
-    read_net.marking.resize(3);
-    read_net.marking[2] = 1;
-
-    nets[1] = read_net;
-    nets[2] = read_net;
-
-    train_command[0] = -1;
-    train_command[1] = -1;
+    n_places = n_places;
+    n_transitions = n_transitions;
 }
 
-vector <int> sensibilized_transitions(PetriNet pnet){
+void PetriNet::setMarking(vector<int> marking){
+    marking = marking;
+}
+
+vector<int> PetriNet::getMarking(){
+    return marking;
+}
+
+vector <int> PetriNet::sensibilized_transitions(){
     bool sensibilized;
     vector <int> transitions;
     transitions.resize(0);
 
-    for (int j=0; j<N_TRANSITIONS; j++){
-        sensibilized = true;
-        for (int i=0; i<N_PLACES; i++)
-            if (pnet.marking[i] < pnet.pre[i][j])
-                sensibilized = false;
-        if (sensibilized)
-            transitions.push_back(j);
+    for (int j=0; j<n_transitions; j++){
+      sensibilized = true;
+      for (int i=0; i<n_places; i++)
+        if (marking[i] < pre[i][j])
+          sensibilized = false;
+      if (sensibilized)
+        transitions.push_back(j);
     }
+
     return transitions;
-
 }
 
-PetriNet get_petrinet(int scope){
-    return nets[scope];
-}
-
-void set_petrinet(PetriNet new_net, int scope){
-    nets[scope] = new_net;
-}
-
-int choosed_transition(vector <int> transitions, int scope){
-    if (scope == STATION)
-        return transitions[random(0, transitions.size()-1)];
-
-    for (int transition : transitions)
-        if (train_command[scope] == transition)
-          return transition;
-
-    return -1;
-}
-
-PetriNet execute_pre(PetriNet pnet, int transition){
+void PetriNet::execute_pre(int transition){
     cout << transition << endl;
-    for (int i=0; i<N_PLACES; i++)
-        cout << pnet.marking[i] << " ";
+    for (int i=0; i<n_places; i++)
+        cout << marking[i] << " ";
 
     cout << endl;
 
-    for (int i=0; i<N_PLACES; i++)
-        cout << pnet.pre[i][transition] << " ";
+    for (int i=0; i<n_places; i++)
+        cout << pre[i][transition] << " ";
 
     cout << endl;
 
-    for (int i=0; i<N_PLACES; i++){
-        pnet.marking[i] -= pnet.pre[i][transition];
-        cout << pnet.marking[i] << " ";
+    for (int i=0; i<n_places; i++){
+        marking[i] -= pre[i][transition];
+        cout << marking[i] << " ";
     }
     cout << endl;
-    return pnet;
 }
 
-PetriNet execute_pos(PetriNet pnet, int transition){
-    for (int i=0; i<N_PLACES; i++){
-        cout << pnet.pos[i][transition] << " ";
+void PetriNet::execute_pos( int transition){
+    for (int i=0; i<n_places; i++){
+        cout << pos[i][transition] << " ";
     }
     cout << endl;
-    for (int i=0; i<N_PLACES; i++){
-        pnet.marking[i] += pnet.pos[i][transition];
-        cout << pnet.marking[i] << " ";
+    for (int i=0; i<n_places; i++){
+        marking[i] += pos[i][transition];
+        cout << marking[i] << " ";
     }
     cout << endl;
-    return pnet;
 }
 
-void execute_action(PetriNet pnet, int transition){
-    switch (pnet.actions[transition]) {
+void PetriNet::execute_action(int transition){
+    switch (actions[transition]) {
       case N:
         break;
 
       case R1:
-        train_command[0] = R;
+        //train_command[0] = R;
         //show("T " + transition + " Mandou Trem 1 para direita");
         break;
 
@@ -198,6 +163,32 @@ void execute_action(PetriNet pnet, int transition){
 
         break;
 
-
     }
+}
+
+void PetriTrain::execute_action(int transition){
+    switch (actions[transition]) {
+      case R:
+        break;
+
+      case L:
+
+        break;
+
+      case S:
+
+        break;
+    }
+}
+
+int PetriNet::choose_transition(vector <int> transitions){
+    return transitions[random(0, transitions.size()-1)];
+}
+
+int PetriTrain::choose_transition(vector <int> transitions){
+    for (int transition : transitions)
+      if (command == transition)
+        return transition;
+
+    return -1;
 }

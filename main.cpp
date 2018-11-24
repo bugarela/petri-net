@@ -9,9 +9,22 @@ using namespace std;
 
 int main(int argc, char **argv) {
 
-    build_nets();
+    vector <int> marking;
+    marking.resize(17);
+    marking[4] = 1;
+    marking[5] = 1;
+    marking[6] = 1;
 
-    ThreadTest estacao(2, STATION);
+    PetriNet* station_net = new PetriNet("net", 17, 18, marking);
+
+    vector <int> marking_train;
+    marking_train.resize(3);
+    marking_train[2] = 1;
+
+    PetriNet train1_net = PetriNet("train", 3, 4, marking_train);
+    PetriNet train2_net = PetriNet("train", 3, 4, marking_train);
+
+    ThreadTest estacao(2, station_net);
 
     //Thread::SleepMS(4000);
     //ThreadTest trem1(1, TREM_1);

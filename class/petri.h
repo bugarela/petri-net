@@ -25,23 +25,31 @@ using namespace std;
 #define S 15
 #define G 17
 
-#define N_TRANSITIONS 18
-#define N_PLACES 17
-
-
 class PetriNet{
-  public:
-      vector <vector <int>> pre;
-      vector <vector <int>> pos;
-      vector <int> actions;
-      vector <int> marking;
+    public:
+
+        vector <vector <int>> pre;
+        vector <vector <int>> pos;
+        vector <int> actions;
+        vector <int> marking;
+        int n_places;
+        int n_transitions;
+
+        PetriNet(string filename, int n_places, int n_transitions, vector<int> marking);
+
+        void setMarking(vector<int> marking);
+        vector<int> getMarking();
+
+        vector <int> sensibilized_transitions();
+        void execute_pre(int transition);
+        void execute_pos(int transition);
+        virtual void execute_action(int transition);
+        virtual int choose_transition(vector <int> transitions);
 };
 
-void build_nets();
-void set_petrinet(PetriNet new_net, int scope);
-vector <int> sensibilized_transitions(PetriNet pnet);
-PetriNet get_petrinet(int scope);
-PetriNet execute_pre(PetriNet pnet, int transition);
-PetriNet execute_pos(PetriNet pnet, int transition);
-void execute_action(PetriNet pnet, int transition);
-int choosed_transition(vector <int> transitions, int scope);
+class PetriTrain : public PetriNet{
+    public:
+      int command;
+      void execute_action(int transition) override;
+      int choose_transition(vector <int> transitions) override;
+};
