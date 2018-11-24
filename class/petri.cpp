@@ -63,15 +63,18 @@ vector<int> read_vector(string file, int n_transitions) {
   return actions;
 }
 
-PetriNet::PetriNet(string filename, int n_places, int n_transitions,
-                   vector<int> marking) {
+PetriNet::PetriNet() { cout << "Construtor vazio aaa" << endl; }
+
+PetriNet::PetriNet(string filename, int places, int transitions,
+                   vector<int> initial_marking) {
+  n_places = places;
+  n_transitions = transitions;
+
   pre = read_matrix(filename + "/pre.txt", n_places, n_transitions);
   pos = read_matrix(filename + "/pos.txt", n_places, n_transitions);
   actions = read_vector(filename + "/actions.txt", n_transitions);
-  marking = marking;
-
-  n_places = n_places;
-  n_transitions = n_transitions;
+  marking = initial_marking;
+  command = 0;
 }
 
 void PetriNet::setMarking(vector<int> marking) { marking = marking; }
@@ -82,15 +85,23 @@ vector<int> PetriNet::sensibilized_transitions() {
   bool sensibilized;
   vector<int> transitions;
   transitions.resize(0);
-  system("pause");
   for (int j = 0; j < n_transitions; j++) {
     sensibilized = true;
     for (int i = 0; i < n_places; i++)
       if (marking[i] < pre[i][j]) sensibilized = false;
     if (sensibilized) transitions.push_back(j);
   }
-
   return transitions;
+}
+
+int PetriNet::choose_transition(vector<int> transitions) {
+  cout << "ecolhendo - command = " << command << endl;
+  if (command == -1) return transitions[random(0, transitions.size() - 1)];
+
+  for (int transition : transitions)
+    if (command == transition) return transition;
+
+  return -1;
 }
 
 void PetriNet::execute_pre(int transition) {
@@ -159,31 +170,17 @@ void PetriNet::execute_action(int transition) {
     case G1:
 
       break;
-  }
-}
 
-void PetriTrain::execute_action(int transition) {
-  switch (actions[transition]) {
-    case R:
-      break;
-
-    case L:
+    case TR:
 
       break;
 
-    case S:
+    case TL:
+
+      break;
+
+    case TS:
 
       break;
   }
-}
-
-int PetriNet::choose_transition(vector<int> transitions) {
-  return transitions[random(0, transitions.size() - 1)];
-}
-
-int PetriTrain::choose_transition(vector<int> transitions) {
-  for (int transition : transitions)
-    if (command == transition) return transition;
-
-  return -1;
 }

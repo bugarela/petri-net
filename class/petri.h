@@ -25,6 +25,10 @@ using namespace std;
 #define S 15
 #define G 17
 
+#define TR 101
+#define TL 102
+#define TS 103
+
 class PetriNet {
  public:
   vector<vector<int>> pre;
@@ -33,9 +37,12 @@ class PetriNet {
   vector<int> marking;
   int n_places;
   int n_transitions;
+  int command;
 
-  PetriNet(string filename, int n_places, int n_transitions,
-           vector<int> marking);
+  PetriNet();
+
+  PetriNet(string filename, int places, int transitions,
+           vector<int> initial_marking);
 
   void setMarking(vector<int> marking);
   vector<int> getMarking();
@@ -43,13 +50,6 @@ class PetriNet {
   vector<int> sensibilized_transitions();
   void execute_pre(int transition);
   void execute_pos(int transition);
-  virtual void execute_action(int transition);
-  virtual int choose_transition(vector<int> transitions);
-};
-
-class PetriTrain : public PetriNet {
- public:
-  int command;
-  void execute_action(int transition) override;
-  int choose_transition(vector<int> transitions) override;
+  void execute_action(int transition);
+  int choose_transition(vector<int> transitions);
 };

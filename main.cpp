@@ -14,7 +14,8 @@ int main(int argc, char** argv) {
   marking[5] = 1;
   marking[6] = 1;
 
-  PetriNet* station_net = new PetriNet("net", 17, 18, marking);
+  PetriNet station_net = PetriNet("net", 17, 18, marking);
+  cout << station_net.n_transitions << endl;
 
   vector<int> marking_train;
   marking_train.resize(3);
@@ -24,11 +25,7 @@ int main(int argc, char** argv) {
   PetriNet train2_net = PetriNet("train", 3, 4, marking_train);
 
   ThreadTest estacao(2, station_net);
-
-  // Thread::SleepMS(4000);
-  // ThreadTest trem1(1, TREM_1);
-  // ThreadTest trem2(1, TREM_2);
-  // vector <int> transitions = sensibilized_transitions(net);
+  ThreadTest t1(1, train1_net);
 
   MapaTrem trens;
 
@@ -38,7 +35,6 @@ int main(int argc, char** argv) {
   trens.Trem2Txt("Mensagem trem 2.");
 
   trens.Gate(1);
-
   for (float p = -1; p <= 1; p += 0.01)  // velocidade = 0.01
   {
     if (p < 0)

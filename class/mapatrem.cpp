@@ -21,10 +21,10 @@
 MapaTrem::MapaTrem() {
   Path* trajeto;
 
-  fundoG1 = imread("img/mapa1.png", IMREAD_COLOR);  // Read the file
-  fundoG0 = imread("img/mapa2.png", IMREAD_COLOR);  // Read the file
-  trem1 = imread("img/train1.png", IMREAD_COLOR);
-  trem2 = imread("img/train2.png", IMREAD_COLOR);
+  fundoG1 = imread("img/mapa1.png", CV_LOAD_IMAGE_COLOR);  // Read the file
+  fundoG0 = imread("img/mapa2.png", CV_LOAD_IMAGE_COLOR);  // Read the file
+  trem1 = imread("img/train1.png", CV_LOAD_IMAGE_COLOR);
+  trem2 = imread("img/train2.png", CV_LOAD_IMAGE_COLOR);
 
   // secao critica
   trajeto = new Path();

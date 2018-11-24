@@ -80,7 +80,7 @@ bool draw::rectangle(Mat* img, Rect regiao, unsigned int borda,
 
   // fundo
   cv::rectangle(*img, regiaoFill, fillColor,
-                FILLED,  // faz preenchimento
+                CV_FILLED,  // faz preenchimento
                 0);
 
   return true;
