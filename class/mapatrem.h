@@ -31,6 +31,7 @@
 using namespace std;
 using namespace cv;
 
+int random(int n, int m);
 class MapaTrem : public Task {
  protected:
   sema sMapa;

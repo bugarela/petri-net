@@ -17,14 +17,27 @@
  */
 
 #include "mapatrem.h"
+#include <ctime>
+
+int random(int n, int m) { return (rand() % (m - n + 1)) + n; }
 
 MapaTrem::MapaTrem() {
+  srand(time(NULL));
   Path* trajeto;
+
+  int n_train1 = random(1, 9);
+  int n_train2 = random(1, 9);
+  cout << rand() << " " << rand() << endl;
+
+  while (n_train2 == n_train1) n_train2 = random(1, 9);
+
+  string train1 = "img/train" + to_string(n_train1) + ".png";
+  string train2 = "img/train" + to_string(n_train2) + ".png";
 
   fundoG1 = imread("img/mapa1.png", CV_LOAD_IMAGE_COLOR);  // Read the file
   fundoG0 = imread("img/mapa2.png", CV_LOAD_IMAGE_COLOR);  // Read the file
-  trem1 = imread("img/train1.png", CV_LOAD_IMAGE_COLOR);
-  trem2 = imread("img/train2.png", CV_LOAD_IMAGE_COLOR);
+  trem1 = imread(train1, CV_LOAD_IMAGE_COLOR);
+  trem2 = imread(train2, CV_LOAD_IMAGE_COLOR);
 
   // secao critica
   trajeto = new Path();

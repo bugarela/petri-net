@@ -4,8 +4,6 @@
 #include <iostream>
 using namespace std;
 
-int random(int n, int m) { return rand() % (m - n + 1) + n; }
-
 vector<vector<int>> read_matrix(string file, int n_places, int n_transitions) {
   vector<vector<int>> matrix;
   matrix.resize(n_places);
