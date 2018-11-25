@@ -7,6 +7,9 @@
 
 using namespace std;
 
+#define ACCELERATION 0.0001
+#define RETARDATION 0.0003
+
 int main(int argc, char** argv) {
   int commands[] = {ANY, -1, -1};
 
@@ -45,18 +48,18 @@ int main(int argc, char** argv) {
     // Thread::SleepMS(100);
 
     if (velocities[0] == 0)
-      acceleration = 0.001;
+      acceleration = RETARDATION;
     else
-      acceleration = 0.0001;
+      acceleration = ACCELERATION;
 
     if (v1 > velocities[0])
       v1 -= acceleration;
     else if (v1 < velocities[0])
       v1 += acceleration;
 
-    if (abs(v1) < 0.001) v1 = 0;
+    if (abs(v1) < ACCELERATION) v1 = 0;
 
-    p1 += velocities[0];
+    p1 += v1;
 
     if (p1 < 0)
       trens.Trem1Pos((-1) * p1, 1);
@@ -71,18 +74,18 @@ int main(int argc, char** argv) {
 
     // Thread::SleepMS(100);
     if (velocities[1] == 0)
-      acceleration = 0.001;
+      acceleration = RETARDATION;
     else
-      acceleration = 0.0001;
+      acceleration = ACCELERATION;
 
     if (v2 > velocities[1])
       v2 -= acceleration;
     else if (v2 < velocities[1])
       v2 += acceleration;
 
-    if (abs(v2) < 0.0001) v2 = 0;
+    if (abs(v2) < ACCELERATION) v2 = 0;
 
-    p2 += velocities[1];
+    p2 += v2;
 
     if (p2 < 0)
       trens.Trem2Pos((-1) * p2, 2);
