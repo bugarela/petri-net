@@ -37,7 +37,7 @@ PetriNet::PetriNet(int id_net, string filename, int places, int transitions,
   pos = read_matrix(filename + "/pos.txt", n_places, n_transitions);
   actions.resize(n_transitions);
 
-  int trem = filename == "net" ? 0 : 100;
+  int trem = id_net == 0 ? 0 : 100;
   for (int i = 0; i < n_transitions; i++) actions[i] = i + trem;
 }
 
@@ -60,6 +60,7 @@ vector<int> PetriNet::sensibilized_transitions() {
 
 int PetriNet::choose_transition(vector<int> transitions, int command) {
   // cout << "ecolhendo - command = " << command << endl;
+  if (transitions.size() == 0) return -1;
   if (command == ANY) return transitions[random(0, transitions.size() - 1)];
 
   for (int transition : transitions) {
@@ -104,104 +105,146 @@ void PetriNet::execute_action(int transition, int (*commands)[3],
   // cout << "action: " << actions[transition] << endl;
   switch (actions[transition]) {
     case 0:
-      (*map).Gate(1);
+      (*map).Gate(0);
       cout << "G=1" << endl;
       break;
+
     case 1:
-      (*map).Gate(0);
+      (*map).Gate(1);
       cout << "G=0" << endl;
       break;
+
     case 2:
       (*map).Gate(1);
-      cout << "T1 entra na critica" << endl;
+      cout << "T1 entra na critica - G=1" << endl;
+      while ((*map).C() == 0) Thread::SleepMS(1);
+      cout << "T1 entra na critica - G=1" << endl;
       break;
+
     case 3:
+      sThreads.Lock();
       *commands[1] = 2;
+      sThreads.Unlock();
       cout << "T1 L" << endl;
-      sThreads.Unlock();
-      while ((*map).B1() == 0) Thread::SleepMS(10);
-      sThreads.Lock();
+      while ((*map).B1() == 0) Thread::SleepMS(1);
+      cout << "T1 L" << endl;
       break;
+
     case 4:
+      sThreads.Lock();
       *commands[1] = 3;
+      sThreads.Unlock();
       cout << "T1 R" << endl;
-      sThreads.Unlock();
-      while ((*map).C() == 0) Thread::SleepMS(10);
-      sThreads.Lock();
+      while ((*map).C() == 0) Thread::SleepMS(1);
+      cout << "T1 R" << endl;
       break;
+
     case 5:
+      sThreads.Lock();
       *commands[1] = 3;
-      cout << "T2 R (inicio)" << endl;
       sThreads.Unlock();
-      while ((*map).B1() == 0) Thread::SleepMS(10);
-      sThreads.Lock();
+      cout << "T1 R (inicio)" << endl;
+      while ((*map).B1() == 0) Thread::SleepMS(1);
+      cout << "T1 R (inicio)" << endl;
       break;
+
     case 6:
-      *commands[1] = 1;
-      cout << "T1 S" << endl;
-      sThreads.Unlock();
-      (*map).Trem1Txt("Trem 1 Desembarcando.");
-      Thread::SleepMS(10000);
       sThreads.Lock();
+      *commands[1] = 1;
+      sThreads.Unlock();
+      cout << "T1 S" << endl;
+      (*map).Trem1Txt("Trem 1 Desembarcando.");
+      Thread::SleepMS(4000);
+      cout << "T1 S" << endl;
       break;
+
     case 7:
+      sThreads.Lock();
+      *commands[1] = 1;
+      sThreads.Unlock();
       cout << "T1 S (espera)" << endl;
       break;
+
     case 8:
+      sThreads.Lock();
       *commands[1] = 0;
+      sThreads.Unlock();
       cout << "T1 S (final)" << endl;
-      // m1
+      (*map).Trem1Txt("Esperando m1");
+      while ((*map).GetLastKeyAndEmpty() != 49) Thread::SleepMS(10);
+      cout << "T1 S (final)" << endl;
       break;
+
     case 9:
       cout << "T1 sai critica" << endl;
-      sThreads.Unlock();
       while ((*map).A1() == 0) Thread::SleepMS(10);
-      sThreads.Lock();
+      cout << "T1 sai critica" << endl;
       break;
+
     case 10:
       (*map).Gate(0);
-      cout << "T2 entra na critica" << endl;
+      cout << "T2 entra na critica - G=0" << endl;
+      while ((*map).C() == 0) Thread::SleepMS(10);
+      cout << "T2 entra na critica - G=0" << endl;
       break;
+
     case 11:
+      sThreads.Lock();
       *commands[2] = 2;
+      sThreads.Unlock();
       cout << "T2 L" << endl;
-      sThreads.Unlock();
       while ((*map).B2() == 0) Thread::SleepMS(10);
-      sThreads.Lock();
+      cout << "T2 L" << endl;
       break;
+
     case 12:
+      sThreads.Lock();
       *commands[2] = 3;
+      sThreads.Unlock();
       cout << "T2 R" << endl;
-      sThreads.Unlock();
       while ((*map).C() == 0) Thread::SleepMS(10);
-      sThreads.Lock();
+      cout << "T2 R" << endl;
       break;
-      break;
+
     case 13:
+      sThreads.Lock();
       *commands[2] = 3;
+      sThreads.Unlock();
       cout << "T2 R (inicio)" << endl;
-      sThreads.Unlock();
-      while ((*map).C() == 0) Thread::SleepMS(10);
-      sThreads.Lock();
+      while ((*map).B2() == 0) Thread::SleepMS(10);
+      cout << "T2 R (inicio)" << endl;
       break;
-      break;
+
     case 14:
-      *commands[2] = 1;
-      cout << "T2 S" << endl;
-      sThreads.Unlock();
-      (*map).Trem2Txt("Trem 2 Desembarcando.");
-      Thread::SleepMS(10000);
       sThreads.Lock();
+      *commands[2] = 1;
+      sThreads.Unlock();
+      cout << "T2 S" << endl;
+      (*map).Trem2Txt("Trem 2 Desembarcando.");
+      Thread::SleepMS(4000);
+      cout << "T2 S" << endl;
       break;
-      break;
+
     case 15:
+      sThreads.Lock();
+      *commands[2] = 1;
+      sThreads.Unlock();
       cout << "T2 S (espera)" << endl;
       break;
+
     case 16:
+      sThreads.Lock();
       *commands[2] = 0;
+      sThreads.Unlock();
       cout << "T2 S (final)" << endl;
-      // m2
+      (*map).Trem2Txt("Esperando m2");
+      while ((*map).GetLastKeyAndEmpty() != 50) Thread::SleepMS(10);
+      cout << "T2 S (final)" << endl;
+      break;
+
     case 17:
+      cout << "T2 sai critica" << endl;
+      while ((*map).A2() == 0) Thread::SleepMS(10);
       cout << "T2 sai critica" << endl;
       break;
 
@@ -215,12 +258,12 @@ void PetriNet::execute_action(int transition, int (*commands)[3],
 
     case 102:
       cout << "Trem: L" << endl;
-      *velocity = -0.1;
+      *velocity = -0.01;
       break;
 
     case 103:
       cout << "Trem: R" << endl;
-      *velocity = 0.1;
+      *velocity = 0.01;
       break;
   }
 }

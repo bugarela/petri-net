@@ -24,33 +24,41 @@ ThreadTest::~ThreadTest() {
 
 bool ThreadTest::Exec() {
   while (1) {
-    sThreads.Lock();
-    // cout << "Lock da " << Thread::ID() << endl;
-
+    if (net.id == 0) {
+      sThreads.Lock();
+      // cout << "Lock da " << Thread::ID() << endl;
+    }
     vector<int> transitions = net.sensibilized_transitions();
 
     int transition_position =
         net.choose_transition(transitions, *commands[net.id]);
 
     if (transition_position == -1) {
-      // cout << "Unlock da " << Thread::ID() << endl;
-      sThreads.Unlock();
+      if (net.id == 0) {
+        sThreads.Unlock();
+        // cout << "Unlock da " << Thread::ID() << endl;
+      }
       Thread::SleepMS(100);
       continue;
     }
 
-    cout << net.n_transitions << endl;
-
     net.execute_pre(transition_position);
-
+    if (net.id == 0) {
+      sThreads.Unlock();
+      // cout << "Unlock da " << Thread::ID() << endl;
+    }
     net.execute_action(transition_position, commands, velocity, map,
                        ref(sThreads));
-
+    if (net.id == 0) {
+      sThreads.Lock();
+      // cout << "Lock da " << Thread::ID() << endl;
+    }
     net.execute_pos(transition_position);
 
-    // cout << "Unlock da " << Thread::ID() << endl;
-    sThreads.Unlock();
-    Thread::SleepMS(100);
+    if (net.id == 0) {
+      sThreads.Unlock();
+      // cout << "Unlock da " << Thread::ID() << endl;
+    }
   }
 
   return true;

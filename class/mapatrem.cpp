@@ -139,27 +139,27 @@ bool MapaTrem::Sensores(Point3f p1, Point3f p2, bool& a1, bool& a2, bool& b1,
   Point3f pa1(67, 158, 0), pb1(180, 158, 0), pa2(67, 326, 0), pb2(180, 326, 0),
       pc(435, 242, 0);
 
-  if (linep::Distance(p1, pa1) < 5 || linep::Distance(p2, pa1) < 5)
+  if (linep::Distance(p1, pa1) < 25 || linep::Distance(p2, pa1) < 25)
     a1 = true;
   else
     a1 = false;
 
-  if (linep::Distance(p1, pa2) < 5 || linep::Distance(p2, pa2) < 5)
+  if (linep::Distance(p1, pa2) < 25 || linep::Distance(p2, pa2) < 25)
     a2 = true;
   else
     a2 = false;
 
-  if (linep::Distance(p1, pb1) < 5 || linep::Distance(p2, pb1) < 5)
+  if (linep::Distance(p1, pb1) < 25 || linep::Distance(p2, pb1) < 25)
     b1 = true;
   else
     b1 = false;
 
-  if (linep::Distance(p1, pb2) < 5 || linep::Distance(p2, pb2) < 5)
+  if (linep::Distance(p1, pb2) < 25 || linep::Distance(p2, pb2) < 25)
     b2 = true;
   else
     b2 = false;
 
-  if (linep::Distance(p1, pc) < 5 || linep::Distance(p2, pc) < 5)
+  if (linep::Distance(p1, pc) < 25 || linep::Distance(p2, pc) < 25)
     c = true;
   else
     c = false;
