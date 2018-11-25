@@ -1,5 +1,6 @@
 #include <string>
 #include <vector>
+#include "mapatrem.h"
 
 using namespace std;
 
@@ -19,29 +20,34 @@ using namespace std;
 #define S2 16
 #define G0 17
 #define G1 18
+#define W1 19
+#define W2 20
 
 #define R 11
 #define L 13
 #define S 15
 #define G 17
+#define W 19
 
-#define TR 101
-#define TL 102
-#define TS 103
+#define TR 111
+#define TL 113
+#define TS 115
+
+#define ANY -2
 
 class PetriNet {
  public:
+  int id;
   vector<vector<int>> pre;
   vector<vector<int>> pos;
   vector<int> actions;
   vector<int> marking;
   int n_places;
   int n_transitions;
-  int command;
 
   PetriNet();
 
-  PetriNet(string filename, int places, int transitions,
+  PetriNet(int id, string filename, int places, int transitions,
            vector<int> initial_marking);
 
   void setMarking(vector<int> marking);
@@ -50,6 +56,7 @@ class PetriNet {
   vector<int> sensibilized_transitions();
   void execute_pre(int transition);
   void execute_pos(int transition);
-  void execute_action(int transition);
-  int choose_transition(vector<int> transitions);
+  void execute_action(int transition, int (*commands)[3], double *velocity,
+                      MapaTrem *map, sema sThreads);
+  int choose_transition(vector<int> transitions, int command);
 };
