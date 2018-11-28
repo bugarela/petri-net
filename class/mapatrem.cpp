@@ -27,7 +27,6 @@ MapaTrem::MapaTrem() {
 
   int n_train1 = random(1, 9);
   int n_train2 = random(1, 9);
-  cout << rand() << " " << rand() << endl;
 
   while (n_train2 == n_train1) n_train2 = random(1, 9);
 

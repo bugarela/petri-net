@@ -22,7 +22,7 @@ vector<vector<int>> read_matrix(string file, int n_places, int n_transitions) {
   return matrix;
 }
 
-PetriNet::PetriNet() { cout << "Construtor vazio aaa" << endl; }
+PetriNet::PetriNet() { cout << "PetriNet initialized." << endl; }
 
 PetriNet::PetriNet(int id_net, string filename, int places, int transitions,
                    vector<int> initial_marking) {
@@ -100,7 +100,6 @@ void PetriNet::execute_pos(int transition) {
 
 void PetriNet::execute_action(int transition, int (*commands)[3],
                               double *velocity, MapaTrem *map, sema sThreads) {
-  // cout << "action: " << actions[transition] << endl;
   switch (actions[transition]) {
     case 0:
       (*map).Gate(0);
@@ -116,7 +115,6 @@ void PetriNet::execute_action(int transition, int (*commands)[3],
       (*map).Gate(1);
       cout << "T1 entra na critica - G=1" << endl;
       while ((*map).C() == 0) Thread::SleepMS(1);
-      cout << "T1 entra na critica - G=1" << endl;
       break;
 
     case 3:
@@ -125,7 +123,6 @@ void PetriNet::execute_action(int transition, int (*commands)[3],
       sThreads.Unlock();
       cout << "T1 L" << endl;
       while ((*map).B1() == 0) Thread::SleepMS(1);
-      cout << "T1 L" << endl;
       break;
 
     case 4:
@@ -134,7 +131,6 @@ void PetriNet::execute_action(int transition, int (*commands)[3],
       sThreads.Unlock();
       cout << "T1 R" << endl;
       while ((*map).C() == 0) Thread::SleepMS(1);
-      cout << "T1 R" << endl;
       break;
 
     case 5:
@@ -143,7 +139,6 @@ void PetriNet::execute_action(int transition, int (*commands)[3],
       sThreads.Unlock();
       cout << "T1 R (inicio)" << endl;
       while ((*map).B1() == 0) Thread::SleepMS(1);
-      cout << "T1 R (inicio)" << endl;
       break;
 
     case 6:
@@ -153,7 +148,6 @@ void PetriNet::execute_action(int transition, int (*commands)[3],
       cout << "T1 S" << endl;
       (*map).Trem1Txt("Trem 1 Desembarcando.");
       Thread::SleepMS(4000);
-      cout << "T1 S" << endl;
       break;
 
     case 7:
@@ -167,23 +161,20 @@ void PetriNet::execute_action(int transition, int (*commands)[3],
       sThreads.Lock();
       *commands[1] = 0;
       sThreads.Unlock();
-      cout << "T1 S (final)" << endl;
+      cout << "Esperando m1" << endl;
       (*map).Trem1Txt("Esperando m1");
       while ((*map).GetLastKeyAndEmpty() != 49) Thread::SleepMS(10);
-      cout << "T1 S (final)" << endl;
       break;
 
     case 9:
       cout << "T1 sai critica" << endl;
       while ((*map).A1() == 0) Thread::SleepMS(10);
-      cout << "T1 sai critica" << endl;
       break;
 
     case 10:
       (*map).Gate(0);
       cout << "T2 entra na critica - G=0" << endl;
       while ((*map).C() == 0) Thread::SleepMS(10);
-      cout << "T2 entra na critica - G=0" << endl;
       break;
 
     case 11:
@@ -192,7 +183,6 @@ void PetriNet::execute_action(int transition, int (*commands)[3],
       sThreads.Unlock();
       cout << "T2 L" << endl;
       while ((*map).B2() == 0) Thread::SleepMS(10);
-      cout << "T2 L" << endl;
       break;
 
     case 12:
@@ -201,7 +191,6 @@ void PetriNet::execute_action(int transition, int (*commands)[3],
       sThreads.Unlock();
       cout << "T2 R" << endl;
       while ((*map).C() == 0) Thread::SleepMS(10);
-      cout << "T2 R" << endl;
       break;
 
     case 13:
@@ -210,7 +199,6 @@ void PetriNet::execute_action(int transition, int (*commands)[3],
       sThreads.Unlock();
       cout << "T2 R (inicio)" << endl;
       while ((*map).B2() == 0) Thread::SleepMS(10);
-      cout << "T2 R (inicio)" << endl;
       break;
 
     case 14:
@@ -220,7 +208,6 @@ void PetriNet::execute_action(int transition, int (*commands)[3],
       cout << "T2 S" << endl;
       (*map).Trem2Txt("Trem 2 Desembarcando.");
       Thread::SleepMS(4000);
-      cout << "T2 S" << endl;
       break;
 
     case 15:
@@ -234,16 +221,14 @@ void PetriNet::execute_action(int transition, int (*commands)[3],
       sThreads.Lock();
       *commands[2] = 0;
       sThreads.Unlock();
-      cout << "T2 S (final)" << endl;
+      cout << "Esperando m2" << endl;
       (*map).Trem2Txt("Esperando m2");
       while ((*map).GetLastKeyAndEmpty() != 50) Thread::SleepMS(10);
-      cout << "T2 S (final)" << endl;
       break;
 
     case 17:
       cout << "T2 sai critica" << endl;
       while ((*map).A2() == 0) Thread::SleepMS(10);
-      cout << "T2 sai critica" << endl;
       break;
 
       /* TRAIN ACTIONS: */
